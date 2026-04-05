@@ -1,4 +1,4 @@
-# 🔌 Wiring Guide (FINAL — Parallel LCD Version)
+# 🔌 Wiring Guide (FINAL — Parallel LCD + DC Motor Version)
 ## Adaptive Environmental Control System (Arduino Uno R3)
 
 ---
@@ -12,7 +12,7 @@ All components share common power and ground.
 
 ---
 
-## 📟 LCD Display (16x2, 4-bit mode — EXISTING, KEEP THIS)
+## 📟 LCD Display (16x2, 4-bit mode — KEEP EXISTING)
 
 | LCD Pin | Arduino |
 |--------|--------|
@@ -20,7 +20,7 @@ All components share common power and ground.
 | VDD | 5V |
 | VO | Potentiometer middle pin |
 | RS | Pin 12 |
-| RW | GND ⚠️ IMPORTANT |
+| RW | GND ⚠️ REQUIRED |
 | E  | Pin 11 |
 | D4 | Pin 5 |
 | D5 | Pin 4 |
@@ -43,8 +43,8 @@ All components share common power and ground.
 | GND | GND |
 | VCC | 5V |
 | VRy (Up/Down) | A0 |
-| VRx (optional) | NOT USED |
-| SW (click) | NOT USED |
+| VRx | NOT USED |
+| SW | NOT USED |
 
 ---
 
@@ -53,38 +53,36 @@ All components share common power and ground.
 ### SELECT Button
 - One leg → 5V  
 - Other leg → **Pin 6**  
-- 10kΩ resistor → from Pin 6 to GND  
+- 10kΩ resistor → Pin 6 → GND  
 
 ### BACK Button
 - One leg → 5V  
 - Other leg → **Pin 7**  
-- 10kΩ resistor → from Pin 7 to GND  
+- 10kΩ resistor → Pin 7 → GND  
 
 ---
 
 ## 🌞 Light Sensor (LDR)
 
-Voltage divider:
-
 - LDR → 5V  
 - Other leg → **A1**  
-- 10kΩ resistor → from A1 to GND  
+- 10kΩ resistor → A1 → GND  
 
 ---
 
 ## 🌡️ Temperature Sensor
 
-### Use ONE option:
-
-#### LM35
+### Option A: LM35
 - VCC → 5V  
 - GND → GND  
 - OUT → **A2**
 
-#### OR DHT11
+### Option B: DHT11
 - VCC → 5V  
 - GND → GND  
 - DATA → **Pin 10**
+
+⚠️ Choose ONE (affects Pin 10 usage)
 
 ---
 
@@ -98,7 +96,7 @@ Voltage divider:
 
 ---
 
-## 💡 LEDs (Lighting + Fan)
+## 💡 LEDs (Lighting System)
 
 Each LED:
 - Anode → Arduino pin  
@@ -109,9 +107,40 @@ Each LED:
 | Light 1 | 8 |
 | Light 2 | 9 |
 | Light 3 | 10* |
-| Fan LED | A3 |
 
 ⚠️ If using DHT11 (Pin 10), move Light 3 → A4
+
+---
+
+## 🌬️ DC Motor (Fan Control — REPLACES FAN LED)
+
+### Required:
+- DC Motor
+- NPN Transistor (PN2222 / 2N2222 / S8050)
+- Diode (1N400x)
+- 1kΩ resistor
+
+---
+
+### Transistor Wiring (flat side facing you)
+
+| Pin | Connection |
+|-----|-----------|
+| Emitter (left) | GND |
+| Base (middle) | **A3** through 1kΩ resistor |
+| Collector (right) | Motor (–) |
+
+---
+
+### Motor Wiring
+- Motor (+) → 5V rail  
+- Motor (–) → Transistor Collector  
+
+---
+
+### Diode (CRITICAL)
+- Stripe side → 5V  
+- Other side → Motor (–)  
 
 ---
 
@@ -122,7 +151,7 @@ Each LED:
 | + | A4 |
 | – | GND |
 
-⚠️ If A4 used above, move buzzer → A5
+⚠️ If A4 used for LED (DHT11 case), move buzzer → A5
 
 ---
 
@@ -145,11 +174,12 @@ Each LED:
 | Signal | Pin 10* |
 
 ⚠️ Conflict rule:
-- If using **DHT11**, move servo → Pin 9 (and shift LED accordingly)
+- Pin 10 = Servo OR DHT11 OR LED3  
+- Choose and reassign accordingly
 
 ---
 
-## 🧠 FINAL PIN MAP (No Conflicts)
+## 🧠 FINAL PIN MAP
 
 ### Digital Pins
 | Pin | Use |
@@ -159,9 +189,11 @@ Each LED:
 | 7 | Back button |
 | 8 | LED 1 |
 | 9 | LED 2 |
-| 10 | Servo OR DHT11 |
+| 10 | Servo OR DHT11 OR LED 3 |
 | 11–12 | LCD |
 | 13 | PIR |
+
+---
 
 ### Analog Pins
 | Pin | Use |
@@ -169,40 +201,40 @@ Each LED:
 | A0 | Joystick Y |
 | A1 | LDR |
 | A2 | Temp (LM35) |
-| A3 | LED (fan) |
-| A4 | Buzzer |
+| A3 | Motor control (transistor) |
+| A4 | Buzzer (or LED if reassigned) |
 | A5 | Relay |
 
 ---
 
 ## ⚠️ Important Constraints
 
-- You **cannot use everything at once on Pin 10**
-  - Choose: Servo OR DHT11
-- Analog pins are used as digital outputs where needed
-- Total pin usage is at the safe limit of Arduino Uno
+- Pin 10 is shared → must choose usage
+- Do NOT connect motor directly to Arduino
+- Always use transistor + diode for motor
+- Ensure common ground across all components
 
 ---
 
 ## ✅ Recommended Build Order
 
 1. LCD (confirm working)
-2. Joystick input
+2. Joystick
 3. Buttons
-4. One LED
-5. LDR + temp sensor
+4. LEDs
+5. LDR + Temp sensor
 6. PIR
 7. Buzzer
 8. Relay
-9. Servo (last)
+9. DC Motor (last)
 
 ---
 
 ## 🎯 System Capability
 
 - Menu navigation via joystick + buttons
-- Real-time sensor monitoring
-- Automated control logic (light, temp, motion)
-- Output actuation (LEDs, buzzer, relay, servo)
+- Real-time environmental sensing
+- Automated control logic (light, temperature, motion)
+- Physical actuation (LEDs, buzzer, relay, motor, servo)
 
 ---
