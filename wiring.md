@@ -1,4 +1,4 @@
-# 🔌 Wiring Guide
+# 🔌 Wiring Guide (FINAL — Parallel LCD Version)
 ## Adaptive Environmental Control System (Arduino Uno R3)
 
 ---
@@ -8,74 +8,83 @@
 - Arduino **5V → Breadboard + rail**
 - Arduino **GND → Breadboard – rail**
 
-All components draw power from these rails unless specified otherwise.
+All components share common power and ground.
 
 ---
 
-## 📟 LCD Display (I2C)
+## 📟 LCD Display (16x2, 4-bit mode — EXISTING, KEEP THIS)
 
 | LCD Pin | Arduino |
 |--------|--------|
-| GND | GND |
-| VCC | 5V |
-| SDA | A4 |
-| SCL | A5 |
+| VSS | GND |
+| VDD | 5V |
+| VO | Potentiometer middle pin |
+| RS | Pin 12 |
+| RW | GND ⚠️ IMPORTANT |
+| E  | Pin 11 |
+| D4 | Pin 5 |
+| D5 | Pin 4 |
+| D6 | Pin 3 |
+| D7 | Pin 2 |
+| A (LED+) | 5V (through 220Ω resistor) |
+| K (LED–) | GND |
+
+### Potentiometer (LCD contrast)
+- Left → GND  
+- Right → 5V  
+- Middle → VO  
 
 ---
 
-## 🎮 Joystick Module (Menu Navigation)
+## 🎮 Joystick (Menu Navigation)
 
 | Joystick Pin | Arduino |
 |-------------|--------|
 | GND | GND |
 | VCC | 5V |
-| VRy (Vertical) | A2 |
-| VRx (Horizontal) | A3 (optional) |
-| SW (Click) | Not used |
+| VRy (Up/Down) | A0 |
+| VRx (optional) | NOT USED |
+| SW (click) | NOT USED |
 
 ---
 
-## 🔘 Buttons (User Input)
+## 🔘 Buttons
 
 ### SELECT Button
-- One leg → **5V**
-- Other leg → **Pin 6**
-- 10kΩ resistor → from Pin 6 to GND
+- One leg → 5V  
+- Other leg → **Pin 6**  
+- 10kΩ resistor → from Pin 6 to GND  
 
 ### BACK Button
-- One leg → **5V**
-- Other leg → **Pin 7**
-- 10kΩ resistor → from Pin 7 to GND
+- One leg → 5V  
+- Other leg → **Pin 7**  
+- 10kΩ resistor → from Pin 7 to GND  
 
 ---
 
 ## 🌞 Light Sensor (LDR)
 
-Voltage Divider:
+Voltage divider:
 
 - LDR → 5V  
-- LDR other leg → **A0**
-- 10kΩ resistor → from A0 to GND
+- Other leg → **A1**  
+- 10kΩ resistor → from A1 to GND  
 
 ---
 
 ## 🌡️ Temperature Sensor
 
-### Option A: LM35
+### Use ONE option:
 
-| Pin | Arduino |
-|-----|--------|
-| VCC | 5V |
-| GND | GND |
-| OUT | A1 |
+#### LM35
+- VCC → 5V  
+- GND → GND  
+- OUT → **A2**
 
-### Option B: DHT11
-
-| Pin | Arduino |
-|-----|--------|
-| VCC | 5V |
-| GND | GND |
-| DATA | Pin 10 |
+#### OR DHT11
+- VCC → 5V  
+- GND → GND  
+- DATA → **Pin 10**
 
 ---
 
@@ -89,18 +98,20 @@ Voltage Divider:
 
 ---
 
-## 💡 LEDs (Lighting System)
+## 💡 LEDs (Lighting + Fan)
 
 Each LED:
 - Anode → Arduino pin  
-- Cathode → 220Ω resistor → GND  
+- Cathode → 220Ω → GND  
 
 | Function | Pin |
 |---------|----|
-| Light 1 | 2 |
-| Light 2 | 3 |
-| Light 3 | 4 |
-| Fan Indicator | 5 |
+| Light 1 | 8 |
+| Light 2 | 9 |
+| Light 3 | 10* |
+| Fan LED | A3 |
+
+⚠️ If using DHT11 (Pin 10), move Light 3 → A4
 
 ---
 
@@ -108,8 +119,10 @@ Each LED:
 
 | Pin | Arduino |
 |-----|--------|
-| + | Pin 8 |
+| + | A4 |
 | – | GND |
+
+⚠️ If A4 used above, move buzzer → A5
 
 ---
 
@@ -119,68 +132,77 @@ Each LED:
 |-----|--------|
 | VCC | 5V |
 | GND | GND |
-| IN | Pin 9 |
+| IN | A5 |
 
 ---
 
 ## ⚙️ Servo Motor
 
-| Wire Color | Arduino |
-|-----------|--------|
+| Wire | Arduino |
+|------|--------|
 | Red | 5V |
 | Brown/Black | GND |
-| Yellow/Orange (Signal) | Pin 10 |
+| Signal | Pin 10* |
 
-⚠️ Note: If servo behaves erratically, use external 5V supply.
-
----
-
-## 🧠 Pin Summary
-
-| Component | Pin |
-|----------|----|
-| LCD (I2C) | A4, A5 |
-| Joystick Y | A2 |
-| Joystick X (optional) | A3 |
-| LDR | A0 |
-| Temp Sensor | A1 |
-| Select Button | 6 |
-| Back Button | 7 |
-| Buzzer | 8 |
-| Relay | 9 |
-| Servo / DHT11 | 10 |
-| LEDs | 2–5 |
-| PIR | 13 |
+⚠️ Conflict rule:
+- If using **DHT11**, move servo → Pin 9 (and shift LED accordingly)
 
 ---
 
-## ⚠️ Notes
+## 🧠 FINAL PIN MAP (No Conflicts)
 
-- Do **not** power high-load devices directly from Arduino if unstable
-- Ensure **common ground** across all components
-- Avoid pin conflicts (especially Pin 10 if using both servo and DHT11)
+### Digital Pins
+| Pin | Use |
+|-----|----|
+| 2–5 | LCD |
+| 6 | Select button |
+| 7 | Back button |
+| 8 | LED 1 |
+| 9 | LED 2 |
+| 10 | Servo OR DHT11 |
+| 11–12 | LCD |
+| 13 | PIR |
+
+### Analog Pins
+| Pin | Use |
+|-----|----|
+| A0 | Joystick Y |
+| A1 | LDR |
+| A2 | Temp (LM35) |
+| A3 | LED (fan) |
+| A4 | Buzzer |
+| A5 | Relay |
 
 ---
 
-## ✅ Build Order (Recommended)
+## ⚠️ Important Constraints
 
-1. LCD (I2C test)
+- You **cannot use everything at once on Pin 10**
+  - Choose: Servo OR DHT11
+- Analog pins are used as digital outputs where needed
+- Total pin usage is at the safe limit of Arduino Uno
+
+---
+
+## ✅ Recommended Build Order
+
+1. LCD (confirm working)
 2. Joystick input
 3. Buttons
-4. One LED output
-5. Sensors (LDR, Temp, PIR)
-6. Buzzer
-7. Relay
-8. Servo
+4. One LED
+5. LDR + temp sensor
+6. PIR
+7. Buzzer
+8. Relay
+9. Servo (last)
 
 ---
 
-## 🎯 System Overview
+## 🎯 System Capability
 
-This wiring supports:
-- Menu-driven UI (LCD + joystick + buttons)
-- Sensor-based automation (light, temperature, motion)
-- Actuation (LEDs, buzzer, relay, servo)
-- Multiple system modes (Auto / Manual / Eco)
+- Menu navigation via joystick + buttons
+- Real-time sensor monitoring
+- Automated control logic (light, temp, motion)
+- Output actuation (LEDs, buzzer, relay, servo)
 
 ---
