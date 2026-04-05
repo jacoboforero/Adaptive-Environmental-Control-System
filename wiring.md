@@ -1,4 +1,4 @@
-# 🔌 Wiring Guide (FINAL — Parallel LCD + DC Motor + Bare Relay)
+# 🔌 Wiring Guide (FINAL — Parallel LCD + DC Motor, NO RELAY)
 ## Adaptive Environmental Control System (Arduino Uno R3)
 
 ---
@@ -140,65 +140,9 @@ Each LED:
 
 ---
 
-### Diode:
+### Diode (CRITICAL):
 - Stripe → 5V  
 - Other side → Motor (–)
-
----
-
-## ⚡ Relay (BARE — Transistor Driven)
-
-### Components:
-- 5V Relay (bare)
-- NPN Transistor (PN2222 / 2N2222 / S8050)
-- Diode (1N400x)
-- 1kΩ resistor
-
----
-
-### Step 1: Identify Relay Pins
-
-Relay has:
-- 2 pins = **coil**
-- 3 pins = **switch (COM, NO, NC)**
-
----
-
-### Step 2: Coil Wiring (control side)
-
-#### Transistor (flat side facing you)
-
-| Pin | Connection |
-|-----|-----------|
-| Emitter | GND |
-| Base | **A5** through 1kΩ resistor |
-| Collector | One side of relay coil |
-
----
-
-#### Relay Coil:
-- Other coil pin → **5V**
-- Coil pin (to transistor) → Collector
-
----
-
-#### Diode (CRITICAL):
-- Stripe → 5V  
-- Other side → transistor collector  
-
----
-
-### Step 3: Switching Side (what relay controls)
-
-| Relay Pin | Use |
-|----------|----|
-| COM | Common |
-| NO | Normally Open |
-| NC | Normally Closed |
-
-Typical use:
-- COM → power source  
-- NO → device  
 
 ---
 
@@ -209,7 +153,7 @@ Typical use:
 | + | A4 |
 | – | GND |
 
-⚠️ If A4 used for LED → move buzzer → unused analog pin
+⚠️ If A4 used for LED → move buzzer → A5
 
 ---
 
@@ -249,16 +193,16 @@ Typical use:
 | A2 | Temp |
 | A3 | Motor control |
 | A4 | Buzzer |
-| A5 | Relay control |
+| A5 | (Available / optional expansion) |
 
 ---
 
 ## ⚠️ Critical Rules
 
-- NEVER connect relay coil directly to Arduino
-- ALWAYS use transistor + diode
-- Motor and relay both require protection diodes
-- Ensure common ground across entire system
+- NEVER connect motor directly to Arduino
+- ALWAYS use transistor + diode for motor
+- Ensure common ground across all components
+- Avoid pin conflicts on Pin 10
 
 ---
 
@@ -268,19 +212,18 @@ Typical use:
 2. Joystick
 3. Buttons
 4. LEDs
-5. Sensors
+5. Sensors (LDR + Temp)
 6. PIR
 7. Buzzer
-8. DC motor
-9. Relay (last)
+8. DC motor (last)
 
 ---
 
 ## 🎯 System Capability
 
-- Full menu-driven control
-- Sensor-based automation
-- Real actuator control (motor + relay)
-- Safe switching of inductive loads
+- Menu-driven control system (LCD + joystick + buttons)
+- Real-time environmental sensing (light, temperature, motion)
+- Automated decision-making logic
+- Physical actuation (LEDs, buzzer, DC motor fan, optional servo)
 
 ---
