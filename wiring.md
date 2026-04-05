@@ -1,4 +1,4 @@
-# 🔌 Wiring Guide (FINAL — Parallel LCD + DC Motor Version)
+# 🔌 Wiring Guide (FINAL — Parallel LCD + DC Motor + Bare Relay)
 ## Adaptive Environmental Control System (Arduino Uno R3)
 
 ---
@@ -82,7 +82,7 @@ All components share common power and ground.
 - GND → GND  
 - DATA → **Pin 10**
 
-⚠️ Choose ONE (affects Pin 10 usage)
+⚠️ Choose ONE
 
 ---
 
@@ -108,13 +108,13 @@ Each LED:
 | Light 2 | 9 |
 | Light 3 | 10* |
 
-⚠️ If using DHT11 (Pin 10), move Light 3 → A4
+⚠️ If using DHT11 → move Light 3 → A4
 
 ---
 
-## 🌬️ DC Motor (Fan Control — REPLACES FAN LED)
+## 🌬️ DC Motor (Fan Control)
 
-### Required:
+### Components:
 - DC Motor
 - NPN Transistor (PN2222 / 2N2222 / S8050)
 - Diode (1N400x)
@@ -122,25 +122,83 @@ Each LED:
 
 ---
 
-### Transistor Wiring (flat side facing you)
+### Wiring:
+
+#### Transistor (flat side facing you)
 
 | Pin | Connection |
 |-----|-----------|
-| Emitter (left) | GND |
-| Base (middle) | **A3** through 1kΩ resistor |
-| Collector (right) | Motor (–) |
+| Emitter | GND |
+| Base | **A3** through 1kΩ resistor |
+| Collector | Motor (–) |
 
 ---
 
-### Motor Wiring
-- Motor (+) → 5V rail  
-- Motor (–) → Transistor Collector  
+### Motor:
+- Motor (+) → 5V  
+- Motor (–) → Collector  
 
 ---
 
-### Diode (CRITICAL)
-- Stripe side → 5V  
-- Other side → Motor (–)  
+### Diode:
+- Stripe → 5V  
+- Other side → Motor (–)
+
+---
+
+## ⚡ Relay (BARE — Transistor Driven)
+
+### Components:
+- 5V Relay (bare)
+- NPN Transistor (PN2222 / 2N2222 / S8050)
+- Diode (1N400x)
+- 1kΩ resistor
+
+---
+
+### Step 1: Identify Relay Pins
+
+Relay has:
+- 2 pins = **coil**
+- 3 pins = **switch (COM, NO, NC)**
+
+---
+
+### Step 2: Coil Wiring (control side)
+
+#### Transistor (flat side facing you)
+
+| Pin | Connection |
+|-----|-----------|
+| Emitter | GND |
+| Base | **A5** through 1kΩ resistor |
+| Collector | One side of relay coil |
+
+---
+
+#### Relay Coil:
+- Other coil pin → **5V**
+- Coil pin (to transistor) → Collector
+
+---
+
+#### Diode (CRITICAL):
+- Stripe → 5V  
+- Other side → transistor collector  
+
+---
+
+### Step 3: Switching Side (what relay controls)
+
+| Relay Pin | Use |
+|----------|----|
+| COM | Common |
+| NO | Normally Open |
+| NC | Normally Closed |
+
+Typical use:
+- COM → power source  
+- NO → device  
 
 ---
 
@@ -151,17 +209,7 @@ Each LED:
 | + | A4 |
 | – | GND |
 
-⚠️ If A4 used for LED (DHT11 case), move buzzer → A5
-
----
-
-## ⚡ Relay Module
-
-| Pin | Arduino |
-|-----|--------|
-| VCC | 5V |
-| GND | GND |
-| IN | A5 |
+⚠️ If A4 used for LED → move buzzer → unused analog pin
 
 ---
 
@@ -173,9 +221,7 @@ Each LED:
 | Brown/Black | GND |
 | Signal | Pin 10* |
 
-⚠️ Conflict rule:
-- Pin 10 = Servo OR DHT11 OR LED3  
-- Choose and reassign accordingly
+⚠️ Shared pin with DHT11 / LED3
 
 ---
 
@@ -185,11 +231,11 @@ Each LED:
 | Pin | Use |
 |-----|----|
 | 2–5 | LCD |
-| 6 | Select button |
-| 7 | Back button |
+| 6 | Select |
+| 7 | Back |
 | 8 | LED 1 |
 | 9 | LED 2 |
-| 10 | Servo OR DHT11 OR LED 3 |
+| 10 | Servo OR DHT11 OR LED |
 | 11–12 | LCD |
 | 13 | PIR |
 
@@ -198,43 +244,43 @@ Each LED:
 ### Analog Pins
 | Pin | Use |
 |-----|----|
-| A0 | Joystick Y |
+| A0 | Joystick |
 | A1 | LDR |
-| A2 | Temp (LM35) |
-| A3 | Motor control (transistor) |
-| A4 | Buzzer (or LED if reassigned) |
-| A5 | Relay |
+| A2 | Temp |
+| A3 | Motor control |
+| A4 | Buzzer |
+| A5 | Relay control |
 
 ---
 
-## ⚠️ Important Constraints
+## ⚠️ Critical Rules
 
-- Pin 10 is shared → must choose usage
-- Do NOT connect motor directly to Arduino
-- Always use transistor + diode for motor
-- Ensure common ground across all components
+- NEVER connect relay coil directly to Arduino
+- ALWAYS use transistor + diode
+- Motor and relay both require protection diodes
+- Ensure common ground across entire system
 
 ---
 
-## ✅ Recommended Build Order
+## ✅ Build Order
 
-1. LCD (confirm working)
+1. LCD
 2. Joystick
 3. Buttons
 4. LEDs
-5. LDR + Temp sensor
+5. Sensors
 6. PIR
 7. Buzzer
-8. Relay
-9. DC Motor (last)
+8. DC motor
+9. Relay (last)
 
 ---
 
 ## 🎯 System Capability
 
-- Menu navigation via joystick + buttons
-- Real-time environmental sensing
-- Automated control logic (light, temperature, motion)
-- Physical actuation (LEDs, buzzer, relay, motor, servo)
+- Full menu-driven control
+- Sensor-based automation
+- Real actuator control (motor + relay)
+- Safe switching of inductive loads
 
 ---
