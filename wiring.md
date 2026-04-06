@@ -70,19 +70,13 @@ All components share common power and ground.
 
 ---
 
-## 🌡️ Temperature Sensor
+## 🌡️ Temperature & Humidity Sensor (DHT11)
 
-### Option A: LM35
-- VCC → 5V  
-- GND → GND  
-- OUT → **A2**
-
-### Option B: DHT11
-- VCC → 5V  
-- GND → GND  
-- DATA → **Pin 10**
-
-⚠️ Choose ONE
+| Pin | Arduino |
+|-----|--------|
+| VCC | 5V |
+| GND | GND |
+| DATA | Pin 10 |
 
 ---
 
@@ -106,9 +100,7 @@ Each LED:
 |---------|----|
 | Light 1 | 8 |
 | Light 2 | 9 |
-| Light 3 | 10* |
-
-⚠️ If using DHT11 → move Light 3 → A4
+| Light 3 | A4 |
 
 ---
 
@@ -150,10 +142,8 @@ Each LED:
 
 | Pin | Arduino |
 |-----|--------|
-| + | A4 |
+| + | A5 |
 | – | GND |
-
-⚠️ If A4 used for LED → move buzzer → A5
 
 ---
 
@@ -163,9 +153,7 @@ Each LED:
 |------|--------|
 | Red | 5V |
 | Brown/Black | GND |
-| Signal | Pin 10* |
-
-⚠️ Shared pin with DHT11 / LED3
+| Signal | **A2** |
 
 ---
 
@@ -179,7 +167,7 @@ Each LED:
 | 7 | Back |
 | 8 | LED 1 |
 | 9 | LED 2 |
-| 10 | Servo OR DHT11 OR LED |
+| 10 | DHT11 |
 | 11–12 | LCD |
 | 13 | PIR |
 
@@ -190,10 +178,10 @@ Each LED:
 |-----|----|
 | A0 | Joystick |
 | A1 | LDR |
-| A2 | Temp |
+| A2 | Servo |
 | A3 | Motor control |
-| A4 | Buzzer |
-| A5 | (Available / optional expansion) |
+| A4 | LED 3 |
+| A5 | Buzzer |
 
 ---
 
@@ -202,7 +190,8 @@ Each LED:
 - NEVER connect motor directly to Arduino
 - ALWAYS use transistor + diode for motor
 - Ensure common ground across all components
-- Avoid pin conflicts on Pin 10
+- Servo must have its own dedicated signal pin
+- Avoid pin conflicts (resolved in this version)
 
 ---
 
@@ -212,18 +201,19 @@ Each LED:
 2. Joystick
 3. Buttons
 4. LEDs
-5. Sensors (LDR + Temp)
+5. Sensors (LDR + DHT11)
 6. PIR
 7. Buzzer
-8. DC motor (last)
+8. DC motor
+9. Servo (last)
 
 ---
 
 ## 🎯 System Capability
 
 - Menu-driven control system (LCD + joystick + buttons)
-- Real-time environmental sensing (light, temperature, motion)
+- Real-time environmental sensing (light, temperature, motion, humidity)
 - Automated decision-making logic
-- Physical actuation (LEDs, buzzer, DC motor fan, optional servo)
+- Physical actuation (LEDs, buzzer, DC motor fan, servo)
 
 ---
